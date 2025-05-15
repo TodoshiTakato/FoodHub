@@ -4,7 +4,7 @@ FROM php:8.3-fpm-alpine
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN apk add --no-cache nano supervisor \
     && chmod +x /usr/local/bin/install-php-extensions \
-    && install-php-extensions pdo zip curl xml mbstring bcmath redis @composer \
+    && install-php-extensions zip bcmath redis @composer
 
 # Start Supervisor (manages PHP-FPM and queue workers)
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
