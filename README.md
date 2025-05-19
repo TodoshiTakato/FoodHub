@@ -15,5 +15,5 @@ FoodHub: Laravel-based SaaS for restaurants.
 Manages menus, orders, and multi-channel delivery with MongoDB, ClickHouse, and Soketi.
 
 ## Setup
-- Clone: `git clone git@github.com:TodoshiTakato/foodhub.git`
+- Clone: `git clone git@github.com:TodoshiTakato/foodhub.git foodhub`
 - Install: `composer install`
