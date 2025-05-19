@@ -1,34 +1,25 @@
-# Laravel
+/.phpunit.cache
+/node_modules
+/public/build
 /public/hot
 /public/storage
-/public/build
 /storage/*.key
-/storage/app/*
-/storage/framework/*
-/storage/logs/*
-!/storage/app/public
-!/storage/framework/cache
-!/storage/framework/sessions
-!/storage/framework/views
+/storage/pail
+/vendor
+.ash_history
 .env
+.env.backup
 .env.production
-Homestead.yaml
-Homestead.json
-
-# PHP and Composer
-/vendor/
-composer.phar
-
-# Testing
-/phpunit.xml
-/tests/coverage/*
+.phpactor.json
 .phpunit.result.cache
-
-# Node (if using Laravel Echo with Soketi)
-/node_modules/
-/npm-debug.log
+Homestead.json
+Homestead.yaml
+npm-debug.log
 yarn-error.log
-
-# IDEs and Editors
-.idea/
-.vscode/
+/auth.json
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+/.composer
