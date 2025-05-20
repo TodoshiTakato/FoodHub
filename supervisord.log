@@ -104,3 +104,7 @@
 2025-05-16 13:49:30,089 WARN received SIGQUIT indicating exit request
 2025-05-16 13:49:30,090 INFO waiting for php-fpm to die
 2025-05-16 13:49:30,103 INFO stopped: php-fpm (exit status 0)
+2025-05-19 05:17:36,100 INFO Set uid to user 1000 succeeded
+2025-05-19 05:17:36,104 INFO supervisord started with pid 1
+2025-05-19 05:17:37,106 INFO spawned: 'php-fpm' with pid 7
+2025-05-19 05:17:38,208 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
