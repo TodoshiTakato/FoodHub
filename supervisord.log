@@ -108,3 +108,8 @@
 2025-05-19 05:17:36,104 INFO supervisord started with pid 1
 2025-05-19 05:17:37,106 INFO spawned: 'php-fpm' with pid 7
 2025-05-19 05:17:38,208 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-27 11:27:18,517 INFO Set uid to user 1000 succeeded
+2025-05-27 11:27:18,522 INFO supervisord started with pid 1
+2025-05-27 11:27:19,525 INFO spawned: 'php-fpm' with pid 7
+2025-05-27 11:27:20,632 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-27 11:45:35,297 INFO reaped unknown pid 63 (exit status 0)

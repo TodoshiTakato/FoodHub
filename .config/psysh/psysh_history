@@ -1,0 +1,25 @@
+// Попробуем подключиться и получить список баз данных
+DB::connection('mongodb')->getMongoClient()->listDatabases();
+DB::connection('mongodb')->getMongoClient()->admin->command(['ping' => 1]);
+DB::connection('mongodb')->getClient()->listDatabases();
+exit
+DB::connection('mongodb')->getClient()->listDatabases();
+iterator_to_array(DB::connection('mongodb')->getClient()->listDatabases());
+DB::connection('mongodb')->getDatabase()->listCollectionNames();
+iterator_to_array(DB::connection('mongodb')->getDatabase()->listCollectionNames());
+iterator_to_array(DB::connection('mongodb')->getCollection('users')->find());
+iterator_to_array(DB::connection('mongodb')->getCollection('migrations')->find());
+$user = new App\Models\User();
+$user->name = 'Test User';
+$user->email = 'test@example.com';
+$user->password = bcrypt('password');
+$user->save();
+iterator_to_array(DB::connection('mongodb')->getCollection('users')->find());
+exit
+$user = new App\Models\User();
+$user->name = 'Test User';
+$user->email = 'test@example.com';
+$user->password = bcrypt('password');
+$user->save();
+iterator_to_array(DB::connection('mongodb')->getCollection('users')->find());
+exit

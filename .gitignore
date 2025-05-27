@@ -22,8 +22,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-<<<<<<< HEAD
-=======
 .ash_history
->>>>>>> bd607f5 (main branch: added .composer dir and .ash_history files into gitignore)
 /.composer
+supervisord.log
+supervisord.pid
