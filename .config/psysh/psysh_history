@@ -23,3 +23,13 @@ $user->password = bcrypt('password');
 $user->save();
 iterator_to_array(DB::connection('mongodb')->getCollection('users')->find());
 exit
+DB::connection('mongodb')->getClient()->listDatabases();
+exit
+$user = new App\Models\User();
+$user->name = 'Test User';
+$user->email = 'test@example.com';
+$user->password = bcrypt('password');
+$user->save();
+iterator_to_array(DB::connection('mongodb')->getCollection('users')->find());
+php artisan install:api --passport
+exit

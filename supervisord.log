@@ -113,3 +113,14 @@
 2025-05-27 11:27:19,525 INFO spawned: 'php-fpm' with pid 7
 2025-05-27 11:27:20,632 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-05-27 11:45:35,297 INFO reaped unknown pid 63 (exit status 0)
+2025-05-27 12:56:45,357 WARN received SIGQUIT indicating exit request
+2025-05-27 12:56:45,371 INFO waiting for php-fpm to die
+2025-05-27 12:56:45,417 INFO stopped: php-fpm (exit status 0)
+2025-05-28 05:45:19,627 INFO Set uid to user 1000 succeeded
+2025-05-28 05:45:19,632 INFO supervisord started with pid 1
+2025-05-28 05:45:20,635 INFO spawned: 'php-fpm' with pid 7
+2025-05-28 05:45:21,738 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-05-28 06:08:23,695 INFO reaped unknown pid 42 (exit status 0)
+2025-05-28 14:21:23,827 WARN received SIGQUIT indicating exit request
+2025-05-28 14:21:23,834 INFO waiting for php-fpm to die
+2025-05-28 14:21:23,908 INFO stopped: php-fpm (exit status 0)
