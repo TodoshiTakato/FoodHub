@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AppServiceProvider::class,
+    App\Providers\MongoDBPasswordResetServiceProvider::class,
     MongoDB\Laravel\MongoDBServiceProvider::class,
-    MongoDB\Laravel\Auth\PasswordResetServiceProvider::class,
+    Spatie\Permission\PermissionServiceProvider::class,
 ];
