@@ -4,24 +4,23 @@ services:
             args:
                 user: ${USER:-1000}
                 uid: ${UID:-1000}
-                SUPERVISOR_USER: ${SUPERVISOR_USER:-ns}  # Подтягиваем из .env
+                SUPERVISOR_USER: ${SUPERVISOR_USER:-ns}
             context: .
             dockerfile: docker/php-fpm/Dockerfile
         working_dir: /var/www/html
-#        environment:
-#            - SUPERVISOR_USER=${SUPERVISOR_USER:-ns}  # Подтягиваем из .env
-#            - SUPERVISOR_USER=${SUPERVISOR_USER:-www-data}  # если PROD/DEV-TEST
         volumes:
             - .:/var/www/html
             - ./docker/php-fpm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
             - ./docker/php-fpm/php.ini-production:/usr/local/etc/php/php.ini
             - ./docker/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
         depends_on:
-            - mongodb
+            - postgres
             - redis
             - clickhouse
             - soketi
         restart: unless-stopped
+        networks:
+            - foodhub-network
     nginx:
         image: nginx:1.27.4-alpine3.21
         ports:
@@ -32,37 +31,58 @@ services:
         depends_on:
             - php-fpm
         restart: unless-stopped
-    mongodb:
-        image: mongo:8.0.6
+        networks:
+            - foodhub-network
+    postgres:
+        image: postgres:16.6-alpine
         ports:
-            - "27017:27017"
+            - "5432:5432"
+        environment:
+            POSTGRES_DB: foodhub
+            POSTGRES_USER: foodhub
+            POSTGRES_PASSWORD: secret
         volumes:
-            - mongodb_data:/data/db
+            - postgres_data:/var/lib/postgresql/data
         restart: unless-stopped
+        networks:
+            - foodhub-network
     redis:
-        image: redis:7.4.2
+        image: redis:7.4.2-alpine
         ports:
             - "6379:6379"
         restart: unless-stopped
+        networks:
+            - foodhub-network
     clickhouse:
         image: yandex/clickhouse-server:22.1.3.7
         ports:
             - "8123:8123"
             - "9000:9000"
+        environment:
+            CLICKHOUSE_DB: foodhub_analytics
+            CLICKHOUSE_USER: foodhub
+            CLICKHOUSE_PASSWORD: secret
         volumes:
             - clickhouse_data:/var/lib/clickhouse
         restart: unless-stopped
+        networks:
+            - foodhub-network
     soketi:
         image: quay.io/soketi/soketi:1.6.1-16-alpine
-#        image: quay.io/soketi/soketi:pr-1295-16-alpine
         ports:
             - "6001:6001"
         environment:
-            - SOKETI_PORT=6001
-            - SOKETI_DEFAULT_APP_ID=app-id
-            - SOKETI_DEFAULT_APP_KEY=app-key
-            - SOKETI_DEFAULT_APP_SECRET=app-secret
+            SOKETI_PORT: 6001
+            SOKETI_DEFAULT_APP_ID: foodhub-app
+            SOKETI_DEFAULT_APP_KEY: foodhub-key
+            SOKETI_DEFAULT_APP_SECRET: foodhub-secret
+            SOKETI_DEBUG: "true"
         restart: unless-stopped
+        networks:
+            - foodhub-network
 volumes:
-    mongodb_data:
+    postgres_data:
     clickhouse_data:
+networks:
+    foodhub-network:
+        driver: bridge

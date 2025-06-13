@@ -4,7 +4,7 @@ FROM php:8.3-fpm-alpine
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 RUN apk add --no-cache nano supervisor \
     && chmod +x /usr/local/bin/install-php-extensions \
-    && install-php-extensions bcmath mongodb-stable redis-stable zip @composer
+    && install-php-extensions bcmath pdo_pgsql pgsql redis-stable zip curl intl gd pcntl @composer
 
 ARG user
 ARG uid
