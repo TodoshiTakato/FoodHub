@@ -5,19 +5,17 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-use MongoDB\Laravel\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
-use Laravel\Passport\Contracts\OAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
+use App\Models\Traits\UsesUtcTimestamps;
 
-class User extends Authenticatable implements OAuthenticatable
+class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
-
-    protected $connection = 'mongodb';
-    protected $collection = 'users';
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, UsesUtcTimestamps;
 
     /**
      * The attributes that are mass assignable.
@@ -28,6 +26,9 @@ class User extends Authenticatable implements OAuthenticatable
         'name',
         'email',
         'password',
+        'restaurant_id',
+        'phone',
+        'status',
     ];
 
     /**
@@ -51,5 +52,17 @@ class User extends Authenticatable implements OAuthenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Relationships
+    public function restaurant(): BelongsTo
+    {
+        return $this->belongsTo(Restaurant::class);
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 }
