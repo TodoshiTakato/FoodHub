@@ -2,8 +2,8 @@
 
 **Multi-channel SaaS platform for restaurants** - Complete API documentation for developers
 
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-red.svg)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://php.net)
 [![API](https://img.shields.io/badge/API-REST-green.svg)](http://localhost/api/documentation)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -488,7 +488,7 @@ FoodHub supports **6 different channels** for multi-platform ordering:
 ## 🔧 Setup & Installation
 
 ### Prerequisites
-- PHP 8.2+
+- PHP 8.3+
 - Composer
 - PostgreSQL
 - Docker (optional)
@@ -615,4 +615,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Laravel 11 & PHP 8.2**
+**Built with ❤️ using Laravel 12 & PHP 8.3**

@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
     php-fpm:
         build:
@@ -80,6 +82,7 @@ services:
         restart: unless-stopped
         networks:
             - foodhub-network
+
 volumes:
     postgres_data:
     clickhouse_data:
