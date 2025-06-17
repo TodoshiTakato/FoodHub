@@ -19,5 +19,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $this->call([
+            RolePermissionSeeder::class,  // First - create roles and permissions
+            RestaurantSeeder::class,      // Second - create restaurants
+            CategorySeeder::class,        // Third - create categories for restaurants
+            MenuSeeder::class,           // Fourth - create menus for restaurants
+            ProductSeeder::class,        // Fifth - create products and attach to menus
+        ]);
     }
 }

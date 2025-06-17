@@ -10,7 +10,40 @@ use Illuminate\Http\JsonResponse;
 class RestaurantController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/api/v1/restaurants",
+     *     summary="Get list of restaurants",
+     *     tags={"Restaurants"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Restaurants retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Restaurants retrieved successfully"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="data", type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="name", type="string", example="Pizza Palace"),
+     *                         @OA\Property(property="slug", type="string", example="pizza-palace"),
+     *                         @OA\Property(property="description", type="string", example="Best pizza in town"),
+     *                         @OA\Property(property="address", type="object"),
+     *                         @OA\Property(property="phone", type="string", example="+998901234567"),
+     *                         @OA\Property(property="currency", type="string", example="USD")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function index(): JsonResponse
     {
@@ -27,7 +60,41 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/v1/restaurants",
+     *     summary="Create a new restaurant",
+     *     tags={"Restaurants"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="Pizza Palace"),
+     *             @OA\Property(property="description", type="string", example="Best pizza in town"),
+     *             @OA\Property(property="phone", type="string", example="+998901234567"),
+     *             @OA\Property(property="email", type="string", format="email", example="info@pizzapalace.uz"),
+     *             @OA\Property(property="address", type="object", example={"street":"Main Street 123","city":"Tashkent","country":"Uzbekistan"}),
+     *             @OA\Property(property="latitude", type="number", format="float", example=41.2995),
+     *             @OA\Property(property="longitude", type="number", format="float", example=69.2401),
+     *             @OA\Property(property="currency", type="string", example="USD"),
+     *             @OA\Property(property="languages", type="array", @OA\Items(type="string"), example={"en","ru","uz"}),
+     *             @OA\Property(property="business_hours", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Restaurant created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Restaurant created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function store(Request $request): JsonResponse
     {
@@ -57,7 +124,40 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/v1/restaurants/{id}",
+     *     summary="Get restaurant details",
+     *     tags={"Restaurants"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Restaurant ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Restaurant retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Restaurant retrieved successfully"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Pizza Palace"),
+     *                 @OA\Property(property="slug", type="string", example="pizza-palace"),
+     *                 @OA\Property(property="description", type="string", example="Best pizza in town"),
+     *                 @OA\Property(property="address", type="object"),
+     *                 @OA\Property(property="phone", type="string", example="+998901234567"),
+     *                 @OA\Property(property="business_hours", type="object"),
+     *                 @OA\Property(property="currency", type="string", example="USD")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Restaurant not found"
+     *     )
+     * )
      */
     public function show(Restaurant $restaurant): JsonResponse
     {

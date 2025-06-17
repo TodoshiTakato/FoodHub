@@ -158,3 +158,4 @@
 2025-06-16 09:52:02,410 INFO supervisord started with pid 1
 2025-06-16 09:52:03,413 INFO spawned: 'php-fpm' with pid 7
 2025-06-16 09:52:04,575 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-06-17 10:30:09,813 INFO reaped unknown pid 479 (exit status 0)
