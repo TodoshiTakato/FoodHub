@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\MenuController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\DashboardController;
 
 // API Info
 Route::get('/', function () {
@@ -22,6 +23,7 @@ Route::get('/', function () {
                 'menus' => '/menus',
                 'products' => '/products',
                 'orders' => '/orders',
+                'dashboard' => '/dashboard/*',
             ]
         ],
         'message' => 'Welcome to FoodHub API v1'
@@ -99,5 +101,13 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{order}', [OrderController::class, 'show']);
         Route::put('{order}/status', [OrderController::class, 'updateStatus']);
         Route::post('{order}/cancel', [OrderController::class, 'cancel']);
+    });
+
+    // Dashboard analytics
+    Route::prefix('dashboard')->group(function () {
+        Route::get('stats', [DashboardController::class, 'stats']);
+        Route::get('revenue', [DashboardController::class, 'revenue']);
+        Route::get('orders', [DashboardController::class, 'orders']);
+        Route::get('top-products', [DashboardController::class, 'topProducts']);
     });
 });

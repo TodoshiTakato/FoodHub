@@ -135,15 +135,16 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        if (!Auth::attempt($validated)) {
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-
-        $user = Auth::user();
         
-        if ($user->status !== 'active') {
+        // Check if user has status field and is active (if status exists)
+        if (isset($user->status) && $user->status !== 'active') {
             return response()->json([
                 'success' => false,
                 'message' => 'Account is not active'
@@ -155,7 +156,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => $user->load(['restaurant:id,name,slug', 'roles:name']),
+                'user' => $user->only(['id', 'name', 'email', 'phone']),
                 'token' => $token,
                 'token_type' => 'Bearer',
             ],

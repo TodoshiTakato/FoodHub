@@ -18,9 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Создаем middleware группу apiV1 с CORS поддержкой
+        // Создаем middleware группу apiV1
         $middleware->group('apiV1', [
-            \Illuminate\Http\Middleware\HandleCors::class,
             'throttle:apiV1',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
