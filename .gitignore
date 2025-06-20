@@ -26,3 +26,4 @@ yarn-error.log
 supervisord.log
 supervisord.pid
 foodhub-cursor/
+.rnd
