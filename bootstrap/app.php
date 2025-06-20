@@ -6,6 +6,9 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
+    ->withProviders([
+        \Illuminate\Broadcasting\BroadcastServiceProvider::class,
+    ])
     ->withRouting(
         using: function () {
             Route::middleware('apiV1')

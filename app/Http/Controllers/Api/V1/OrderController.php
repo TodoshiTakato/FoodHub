@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Restaurant;
+use App\Events\OrderCreated;
+use App\Events\OrderStatusChanged;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -275,6 +277,9 @@ class OrderController extends Controller
                 $order->items()->create($item);
             }
 
+            // Dispatch OrderCreated event for WebSocket
+            OrderCreated::dispatch($order);
+
             DB::commit();
 
             return response()->json([
@@ -387,6 +392,9 @@ class OrderController extends Controller
             'cancellation_reason' => 'required_if:status,cancelled|string|max:500',
         ]);
 
+        // Store old status for event
+        $oldStatus = $order->status;
+
         $statusTimestamps = [
             'confirmed' => 'confirmed_at',
             'preparing' => 'prepared_at',
@@ -407,6 +415,9 @@ class OrderController extends Controller
         }
 
         $order->update($updateData);
+
+        // Dispatch OrderStatusChanged event for WebSocket
+        OrderStatusChanged::dispatch($order, $oldStatus, $validated['status']);
 
         return response()->json([
             'success' => true,
@@ -431,11 +442,17 @@ class OrderController extends Controller
             'reason' => 'required|string|max:500',
         ]);
 
+        // Store old status for event
+        $oldStatus = $order->status;
+
         $order->update([
             'status' => 'cancelled',
             'cancelled_at' => now(),
             'cancellation_reason' => $validated['reason'],
         ]);
+
+        // Dispatch OrderStatusChanged event for WebSocket
+        OrderStatusChanged::dispatch($order, $oldStatus, 'cancelled');
 
         return response()->json([
             'success' => true,

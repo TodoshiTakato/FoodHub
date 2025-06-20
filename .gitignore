@@ -25,3 +25,4 @@ yarn-error.log
 /.composer
 supervisord.log
 supervisord.pid
+foodhub-cursor/
