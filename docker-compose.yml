@@ -15,11 +15,6 @@ services:
             - ./docker/php-fpm/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
             - ./docker/php-fpm/php.ini-production:/usr/local/etc/php/php.ini
             - ./docker/php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
-        depends_on:
-            - postgres
-            - redis
-            - clickhouse
-            - soketi
         restart: unless-stopped
         networks:
             - foodhub-network
@@ -30,8 +25,6 @@ services:
         volumes:
             - .:/var/www/html
             - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-        depends_on:
-            - php-fpm
         restart: unless-stopped
         networks:
             - foodhub-network
@@ -74,10 +67,10 @@ services:
         ports:
             - "6001:6001"
         environment:
-            SOKETI_PORT: 6001
-            SOKETI_DEFAULT_APP_ID: foodhub-app
-            SOKETI_DEFAULT_APP_KEY: foodhub-key
-            SOKETI_DEFAULT_APP_SECRET: foodhub-secret
+            SOKETI_PORT: ${SOKETI_PORT:-6001}
+            SOKETI_DEFAULT_APP_ID: ${SOKETI_DEFAULT_APP_ID:-foodhub-app}
+            SOKETI_DEFAULT_APP_KEY: ${SOKETI_DEFAULT_APP_KEY:-foodhub-key}
+            SOKETI_DEFAULT_APP_SECRET: ${SOKETI_DEFAULT_APP_SECRET:-foodhub-secret}
             SOKETI_DEBUG: "true"
         restart: unless-stopped
         networks:

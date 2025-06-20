@@ -84,7 +84,7 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => $user->load(['restaurant:id,name,slug', 'roles:name']),
+                'user' => $user->load(['restaurant:id,name,slug', 'roles:id,name', 'roles.permissions:id,name']),
                 'token' => $token,
                 'token_type' => 'Bearer',
             ],
@@ -194,7 +194,7 @@ class AuthController extends Controller
      */
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load(['restaurant:id,name,slug', 'roles:name,permissions']);
+        $user = $request->user()->load(['restaurant:id,name,slug', 'roles:id,name', 'roles.permissions:id,name']);
 
         return response()->json([
             'success' => true,
@@ -220,7 +220,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $user->fresh(['restaurant:id,name,slug', 'roles:name']),
+            'data' => $user->fresh(['restaurant:id,name,slug', 'roles:id,name', 'roles.permissions:id,name']),
             'message' => 'Profile updated successfully'
         ]);
     }
