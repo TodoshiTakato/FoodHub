@@ -13,19 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         $this->call([
             RolePermissionSeeder::class,  // First - create roles and permissions
             RestaurantSeeder::class,      // Second - create restaurants
-            CategorySeeder::class,        // Third - create categories for restaurants
-            MenuSeeder::class,           // Fourth - create menus for restaurants
-            ProductSeeder::class,        // Fifth - create products and attach to menus
+            UserSeeder::class,           // Third - create test users with roles
+            CategorySeeder::class,        // Fourth - create categories for restaurants
+            MenuSeeder::class,           // Fifth - create menus for restaurants
+            ProductSeeder::class,        // Sixth - create products and attach to menus
         ]);
     }
 }
