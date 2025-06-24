@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Menu;
 use App\Models\Restaurant;
+use App\Enums\MenuTypeEnum;
 
 class MenuSeeder extends Seeder
 {
@@ -29,7 +30,7 @@ class MenuSeeder extends Seeder
                     'en' => 'Our complete menu with all available dishes',
                     'ru' => 'Наше полное меню со всеми доступными блюдами'
                 ],
-                'type' => 'main',
+                'type' => MenuTypeEnum::MAIN->value,
                 'channels' => ['web', 'mobile', 'pos'],
                 'availability_hours' => [
                     'monday' => ['09:00', '22:00'],
@@ -62,7 +63,7 @@ class MenuSeeder extends Seeder
                         'en' => 'Start your day with our delicious breakfast options',
                         'ru' => 'Начните день с наших вкусных завтраков'
                     ],
-                    'type' => 'breakfast',
+                    'type' => MenuTypeEnum::BREAKFAST->value,
                     'channels' => ['web', 'mobile'],
                     'availability_hours' => [
                         'monday' => ['07:00', '11:00'],
@@ -90,7 +91,7 @@ class MenuSeeder extends Seeder
                     'en' => 'Special lunch offers at great prices',
                     'ru' => 'Специальные обеденные предложения по отличным ценам'
                 ],
-                'type' => 'lunch',
+                'type' => MenuTypeEnum::LUNCH->value,
                 'channels' => ['web', 'mobile', 'phone', 'pos'],
                 'availability_hours' => [
                     'monday' => ['11:00', '16:00'],
@@ -117,7 +118,7 @@ class MenuSeeder extends Seeder
                     'en' => 'Refreshing drinks and beverages',
                     'ru' => 'Освежающие напитки'
                 ],
-                'type' => 'drinks',
+                'type' => MenuTypeEnum::DRINKS->value,
                 'channels' => ['web', 'mobile', 'telegram', 'whatsapp', 'phone', 'pos'],
                 'availability_hours' => [
                     'monday' => ['09:00', '22:00'],

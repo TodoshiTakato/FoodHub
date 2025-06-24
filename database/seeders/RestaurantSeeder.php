@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Restaurant;
+use App\Enums\StatusEnum;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -94,7 +95,7 @@ class RestaurantSeeder extends Seeder
 
         foreach ($restaurants as $restaurantData) {
             $restaurantData['slug'] = Str::slug($restaurantData['name']);
-            $restaurantData['status'] = 'active';
+            $restaurantData['status'] = StatusEnum::ACTIVE->value;
             $restaurantData['verified_at'] = now();
             
             Restaurant::create($restaurantData);

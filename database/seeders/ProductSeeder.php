@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Restaurant;
 use App\Models\Category;
 use App\Models\Menu;
+use App\Enums\ProductTypeEnum;
 
 class ProductSeeder extends Seeder
 {
@@ -179,7 +180,7 @@ class ProductSeeder extends Seeder
                 'slug' => \Str::slug($productData['name']['en']) . '-' . $restaurant->id,
                 'description' => $productData['description'],
                 'sku' => strtoupper(substr($category->slug, 0, 3)) . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
-                'type' => 'simple',
+                'type' => ProductTypeEnum::SIMPLE->value,
                 'images' => $productData['images'] ?? [],
                 'prices' => $productData['prices'],
                 'cost_price' => ($productData['prices']['web'] ?? 0) * 0.6, // 60% of selling price

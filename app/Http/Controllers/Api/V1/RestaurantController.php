@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Restaurant;
+use App\Enums\StatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -185,7 +186,7 @@ class RestaurantController extends Controller
             'currency' => 'nullable|string|size:3',
             'languages' => 'nullable|array',
             'business_hours' => 'nullable|array',
-            'status' => 'sometimes|in:active,inactive,suspended',
+            'status' => 'sometimes|in:' . implode(',', StatusEnum::strings()),
         ]);
 
         if (isset($validated['name'])) {

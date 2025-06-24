@@ -68,7 +68,7 @@ class Restaurant extends Model
     // Scopes для удобных запросов
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', StatusEnum::ACTIVE->value);
     }
 
     public function scopeVerified($query)

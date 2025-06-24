@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Enums\StatusEnum;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,7 +25,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('admin123'),
                 'phone' => '+998901234567',
                 'restaurant_id' => null,
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'super-admin'
             ],
             [
@@ -33,7 +34,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('owner123'),
                 'phone' => '+998901234568',
                 'restaurant_id' => 1, // Pizza Palace
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'restaurant-owner'
             ],
             [
@@ -42,7 +43,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('manager123'),
                 'phone' => '+998901234569',
                 'restaurant_id' => 1,
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'restaurant-manager'
             ],
             [
@@ -51,7 +52,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('staff123'),
                 'phone' => '+998901234570',
                 'restaurant_id' => 1,
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'kitchen-staff'
             ],
             [
@@ -60,7 +61,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('test123'),
                 'phone' => '+998901234571',
                 'restaurant_id' => null,
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'customer'
             ],
             [
@@ -69,7 +70,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('test123'),
                 'phone' => '+998901234572',
                 'restaurant_id' => null,
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'customer'
             ],
             [
@@ -78,7 +79,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('api123'),
                 'phone' => '+998901234573',
                 'restaurant_id' => null,
-                'status' => 'active',
+                'status' => StatusEnum::ACTIVE->value,
                 'role' => 'customer'
             ],
         ];

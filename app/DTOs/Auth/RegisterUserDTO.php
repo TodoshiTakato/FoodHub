@@ -2,6 +2,7 @@
 
 namespace App\DTOs\Auth;
 
+use App\Enums\StatusEnum;
 use Illuminate\Http\Request;
 
 class RegisterUserDTO
@@ -53,7 +54,7 @@ class RegisterUserDTO
             'password' => $this->password,
             'phone' => $this->phone,
             'restaurant_id' => $this->restaurant_id,
-            'status' => 'active',
+            'status' => StatusEnum::ACTIVE->value,
         ];
     }
 
