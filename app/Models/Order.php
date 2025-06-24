@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Traits\UsesUtcTimestamps;
+use App\Enums\OrderStatusEnum;
+use App\Enums\PaymentStatusEnum;
+use App\Enums\OrderChannelEnum;
 
 class Order extends Model
 {
@@ -44,6 +47,9 @@ class Order extends Model
     ];
 
     protected $casts = [
+        'channel' => OrderChannelEnum::class,
+        'status' => OrderStatusEnum::class,
+        'payment_status' => PaymentStatusEnum::class,
         'customer_info' => 'array',
         'delivery_info' => 'array',
         'items_total' => 'decimal:2',

@@ -57,12 +57,12 @@ class OrderStatusChanged implements ShouldBroadcast
             'order' => [
                 'id' => $this->order->id,
                 'order_number' => $this->order->order_number,
-                'status' => $this->order->status,
-                'old_status' => $this->oldStatus,
-                'new_status' => $this->newStatus,
+                'status' => $this->order->status->toString(),           // API строка
+                'old_status' => $this->oldStatus,                       // Уже строка
+                'new_status' => $this->newStatus,                       // Уже строка
                 'total_amount' => $this->order->total_amount,
                 'currency' => $this->order->currency,
-                'channel' => $this->order->channel,
+                'channel' => $this->order->channel->toString(),         // API строка
                 'customer_info' => $this->order->customer_info,
                 'restaurant_id' => $this->order->restaurant_id,
                 'updated_at' => $this->order->updated_at,

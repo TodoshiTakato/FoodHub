@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('order_number')->unique()->nullable();
-            $table->enum('channel', ['web', 'mobile', 'telegram', 'whatsapp', 'phone', 'pos'])->default('web');
-            $table->enum('status', ['pending', 'confirmed', 'preparing', 'ready', 'out_for_delivery', 'delivered', 'cancelled'])->default('pending');
-            $table->enum('payment_status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
+            $table->tinyInteger('channel')->default(0)->comment('0=web, 1=mobile, 2=telegram, 3=whatsapp, 4=phone, 5=pos');
+            $table->tinyInteger('status')->default(0)->comment('0=pending, 1=confirmed, 2=preparing, 3=ready, 4=out_for_delivery, 5=delivered, 6=cancelled');
+            $table->tinyInteger('payment_status')->default(0)->comment('0=pending, 1=paid, 2=failed, 3=refunded');
             $table->string('payment_method')->nullable();
             $table->json('customer_info');
             $table->json('delivery_info');
@@ -43,11 +43,14 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             
-            // Индексы
+            // Индексы для производительности
             $table->index(['restaurant_id', 'status']);
             $table->index(['restaurant_id', 'channel']);
             $table->index(['user_id', 'status']);
             $table->index('order_number');
+            $table->index('status');
+            $table->index('payment_status');
+            $table->index('channel');
         });
     }
 

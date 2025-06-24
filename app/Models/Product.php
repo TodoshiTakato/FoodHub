@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Traits\UsesUtcTimestamps;
+use App\Enums\ProductTypeEnum;
 
 class Product extends Model
 {
@@ -40,6 +41,7 @@ class Product extends Model
     ];
 
     protected $casts = [
+        'type' => ProductTypeEnum::class,
         'name' => 'array',
         'description' => 'array',
         'images' => 'array',

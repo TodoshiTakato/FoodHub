@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Traits\UsesUtcTimestamps;
+use App\Enums\StatusEnum;
 
 class User extends Authenticatable
 {
@@ -49,6 +50,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'status' => StatusEnum::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];

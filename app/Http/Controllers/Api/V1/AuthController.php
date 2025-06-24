@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\DTOs\Auth\RegisterUserDTO;
+use App\DTOs\Auth\LoginUserDTO;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Enums\StatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -57,23 +62,18 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function register(Request $request): JsonResponse
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
-            'restaurant_id' => 'nullable|exists:restaurants,id',
-        ]);
+        // Create DTO from validated data (Form Request уже провалидировал)
+        $dto = RegisterUserDTO::fromRequest($request);
 
         $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'] ?? null,
-            'restaurant_id' => $validated['restaurant_id'] ?? null,
-            'status' => 'active',
+            'name' => $dto->name,
+            'email' => $dto->email,
+            'password' => Hash::make($dto->password),
+            'phone' => $dto->phone,
+            'restaurant_id' => $dto->restaurant_id,
+            'status' => StatusEnum::ACTIVE->value,  // Используем ->value (0)
         ]);
 
         // Assign default role
@@ -128,23 +128,21 @@ class AuthController extends Controller
      *     )
      * )
      */
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        // Create DTO from validated data (Form Request уже провалидировал)
+        $dto = LoginUserDTO::fromRequest($request);
 
-        $user = User::where('email', $validated['email'])->first();
+        $user = User::where('email', $dto->email)->first();
 
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        if (!$user || !Hash::check($dto->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
         
-        // Check if user has status field and is active (if status exists)
-        if (isset($user->status) && $user->status !== 'active') {
+        // Check if user is active
+        if ($user->status !== StatusEnum::ACTIVE) {
             return response()->json([
                 'success' => false,
                 'message' => 'Account is not active'

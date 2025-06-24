@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('restaurant_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('phone')->nullable();
-            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
+            $table->tinyInteger('status')->default(0)->comment('0=active, 1=inactive, 2=suspended');
             
             // Индексы
             $table->index(['restaurant_id', 'status']);

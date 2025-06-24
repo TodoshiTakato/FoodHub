@@ -28,7 +28,7 @@ return new class extends Migration
             $table->json('business_hours')->nullable(); // Часы работы
             $table->json('delivery_zones')->nullable(); // Зоны доставки
             $table->json('settings')->nullable(); // Дополнительные настройки
-            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
+            $table->tinyInteger('status')->default(0)->comment('0=active, 1=inactive, 2=suspended');
             $table->timestamp('verified_at')->nullable();
             $table->timestamps();
             

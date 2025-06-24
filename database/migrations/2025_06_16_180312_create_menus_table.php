@@ -17,7 +17,7 @@ return new class extends Migration
             $table->json('name'); // Мультиязычное название
             $table->string('slug');
             $table->json('description')->nullable(); // Мультиязычное описание
-            $table->enum('type', ['main', 'breakfast', 'lunch', 'dinner', 'drinks', 'special'])->default('main');
+            $table->tinyInteger('type')->default(0)->comment('0=main, 1=breakfast, 2=lunch, 3=dinner, 4=drinks, 5=special');
             $table->json('channels')->default('["web", "mobile"]'); // Каналы продаж
             $table->json('availability_hours')->nullable(); // Время доступности
             $table->boolean('is_active')->default(true);

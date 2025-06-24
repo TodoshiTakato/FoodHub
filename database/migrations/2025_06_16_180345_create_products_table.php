@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug');
             $table->json('description')->nullable(); // Мультиязычное описание
             $table->string('sku')->nullable(); // Артикул
-            $table->enum('type', ['simple', 'combo', 'modifier'])->default('simple');
+            $table->tinyInteger('type')->default(0)->comment('0=simple, 1=combo, 2=modifier');
             $table->json('images')->nullable(); // Массив URL изображений
             $table->json('prices'); // Цены по каналам: {"web": 10.99, "mobile": 9.99, "delivery": 12.99}
             $table->decimal('cost_price', 10, 2)->nullable(); // Себестоимость

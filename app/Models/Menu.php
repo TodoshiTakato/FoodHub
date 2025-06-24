@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Traits\UsesUtcTimestamps;
+use App\Enums\MenuTypeEnum;
 
 class Menu extends Model
 {
@@ -26,6 +27,7 @@ class Menu extends Model
     ];
 
     protected $casts = [
+        'type' => MenuTypeEnum::class,
         'name' => 'array',
         'description' => 'array',
         'channels' => 'array',

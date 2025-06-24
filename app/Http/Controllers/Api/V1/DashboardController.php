@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Enums\OrderStatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -130,7 +131,8 @@ class DashboardController extends Controller
     {
         $orders = [];
         $customers = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Wilson', 'Tom Brown', 'Lisa Davis'];
-        $statuses = ['pending', 'preparing', 'ready', 'completed'];
+        // Для mock данных используем строки (в реальном API будем использовать ->value для БД)
+        $statuses = ['pending', 'preparing', 'ready', 'delivered'];
 
         for ($i = 0; $i < $count; $i++) {
             $orders[] = [

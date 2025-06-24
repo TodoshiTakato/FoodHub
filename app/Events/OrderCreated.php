@@ -53,10 +53,10 @@ class OrderCreated implements ShouldBroadcast
             'order' => [
                 'id' => $this->order->id,
                 'order_number' => $this->order->order_number,
-                'status' => $this->order->status,
+                'status' => $this->order->status->toString(),           // API строка
                 'total_amount' => $this->order->total_amount,
                 'currency' => $this->order->currency,
-                'channel' => $this->order->channel,
+                'channel' => $this->order->channel->toString(),         // API строка
                 'customer_info' => $this->order->customer_info,
                 'restaurant_id' => $this->order->restaurant_id,
                 'created_at' => $this->order->created_at,

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Traits\UsesUtcTimestamps;
+use App\Enums\StatusEnum;
 
 class Restaurant extends Model
 {
@@ -32,6 +33,7 @@ class Restaurant extends Model
     ];
 
     protected $casts = [
+        'status' => StatusEnum::class,
         'address' => 'array',
         'languages' => 'array',
         'business_hours' => 'array',
