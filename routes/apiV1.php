@@ -36,7 +36,7 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     
     // Protected auth routes
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:apiV1')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::put('profile', [AuthController::class, 'updateProfile']);
         Route::put('password', [AuthController::class, 'changePassword']);
@@ -54,7 +54,7 @@ Route::prefix('restaurants')->group(function () {
     Route::get('{restaurant:slug}/menus', [MenuController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/products', [ProductController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/orders', [OrderController::class, 'getByRestaurant'])
-        ->middleware('auth:api');
+        ->middleware('auth:apiV1');
 });
 
 // Public menu routes
@@ -71,7 +71,7 @@ Route::prefix('products')->group(function () {
 });
 
 // Protected routes (require authentication)
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:apiV1')->group(function () {
     
     // Restaurant management (for restaurant owners/managers)
     Route::prefix('restaurants')->group(function () {
