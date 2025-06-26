@@ -47,6 +47,11 @@ namespace App\Http\Controllers;
  * )
  * 
  * @OA\Tag(
+ *     name="Categories",
+ *     description="Product category management with multilingual support"
+ * )
+ * 
+ * @OA\Tag(
  *     name="Menus", 
  *     description="Menu management with multi-channel support"
  * )

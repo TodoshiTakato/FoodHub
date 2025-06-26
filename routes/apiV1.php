@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\RestaurantController;
 use App\Http\Controllers\Api\V1\MenuController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DashboardController;
@@ -20,6 +21,7 @@ Route::get('/', function () {
             'endpoints' => [
                 'auth' => '/auth/*',
                 'restaurants' => '/restaurants',
+                'categories' => '/categories',
                 'menus' => '/menus',
                 'products' => '/products',
                 'orders' => '/orders',
@@ -50,7 +52,8 @@ Route::prefix('restaurants')->group(function () {
     Route::get('/', [RestaurantController::class, 'index']);
     Route::get('{restaurant:slug}', [RestaurantController::class, 'show']);
     
-    // Restaurant menus and products (public)
+    // Restaurant menus, categories and products (public)
+    Route::get('{restaurant:slug}/categories', [CategoryController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/menus', [MenuController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/products', [ProductController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/orders', [OrderController::class, 'getByRestaurant'])
@@ -61,6 +64,12 @@ Route::prefix('restaurants')->group(function () {
 Route::prefix('menus')->group(function () {
     Route::get('/', [MenuController::class, 'index']);
     Route::get('{menu}', [MenuController::class, 'show']);
+});
+
+// Public category routes
+Route::prefix('categories')->group(function () {
+    Route::get('/', [CategoryController::class, 'index']);
+    Route::get('{category}', [CategoryController::class, 'show']);
 });
 
 // Public product routes  
@@ -78,6 +87,13 @@ Route::middleware('auth:apiV1')->group(function () {
         Route::post('/', [RestaurantController::class, 'store']);
         Route::put('{restaurant}', [RestaurantController::class, 'update']);
         Route::delete('{restaurant}', [RestaurantController::class, 'destroy']);
+    });
+    
+    // Category management
+    Route::prefix('categories')->group(function () {
+        Route::post('/', [CategoryController::class, 'store']);
+        Route::put('{category}', [CategoryController::class, 'update']);
+        Route::delete('{category}', [CategoryController::class, 'destroy']);
     });
     
     // Menu management

@@ -27,6 +27,3 @@ supervisord.log
 supervisord.pid
 foodhub-cursor/
 .rnd
-
-# Postman environment files (contain sensitive data)
-*.postman_environment.json
