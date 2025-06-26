@@ -1,0 +1,598 @@
+{
+	"info": {
+		"_postman_id": "foodhub-complete-collection",
+		"name": "FoodHub API v1 - Complete Collection",
+		"description": "Complete API collection for FoodHub - Multi-channel SaaS platform for restaurants\n\n**Base URL:** http://localhost/api/v1\n**Authentication:** Bearer Token (Laravel Passport)\n**WebSocket:** ws://localhost:6001 (Soketi)\n- App Key: foodhub-key\n- Channels: restaurant.{id}, orders, order.{id}",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{"key": "base_url", "value": "http://localhost/api/v1"},
+		{"key": "auth_token", "value": ""},
+		{"key": "restaurant_id", "value": "1"}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [{"key": "token", "value": "{{auth_token}}"}]
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('auth_token', response.data.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\",\n  \"phone\": \"+998901234567\",\n  \"restaurant_id\": {{restaurant_id}}\n}"
+						},
+						"url": "{{base_url}}/auth/register"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.collectionVariables.set('auth_token', response.data.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@foodhub.uz\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": "{{base_url}}/auth/login"
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/auth/me"
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Smith\",\n  \"phone\": \"+998901234567\",\n  \"email\": \"john.smith@foodhub.uz\"\n}"
+						},
+						"url": "{{base_url}}/auth/profile"
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"current_password\": \"password123\",\n  \"password\": \"newpassword123\",\n  \"password_confirmation\": \"newpassword123\"\n}"
+						},
+						"url": "{{base_url}}/auth/password"
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/auth/refresh"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/auth/logout"
+					}
+				}
+			]
+		},
+		{
+			"name": "🏪 Restaurants",
+			"item": [
+				{
+					"name": "List Restaurants",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/restaurants?page=1",
+							"host": ["{{base_url}}"],
+							"path": ["restaurants"],
+							"query": [{"key": "page", "value": "1"}]
+						}
+					}
+				},
+				{
+					"name": "Get Restaurant Details",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/restaurants/{{restaurant_id}}"
+					}
+				},
+				{
+					"name": "Create Restaurant",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Pizza Palace\",\n  \"description\": \"Best pizza in town\",\n  \"phone\": \"+998901234567\",\n  \"email\": \"info@pizzapalace.uz\",\n  \"address\": {\n    \"street\": \"Main Street 123\",\n    \"city\": \"Tashkent\",\n    \"country\": \"Uzbekistan\"\n  },\n  \"latitude\": 41.2995,\n  \"longitude\": 69.2401,\n  \"currency\": \"USD\",\n  \"languages\": [\"en\", \"ru\", \"uz\"],\n  \"business_hours\": {\n    \"monday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n    \"tuesday\": {\"open\": \"09:00\", \"close\": \"22:00\"}\n  }\n}"
+						},
+						"url": "{{base_url}}/restaurants"
+					}
+				},
+				{
+					"name": "Update Restaurant",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Pizza Palace Updated\",\n  \"description\": \"The best pizza in town!\"\n}"
+						},
+						"url": "{{base_url}}/restaurants/{{restaurant_id}}"
+					}
+				},
+				{
+					"name": "Delete Restaurant",
+					"request": {
+						"method": "DELETE",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/restaurants/{{restaurant_id}}"
+					}
+				},
+				{
+					"name": "Get Restaurant Menus",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/restaurants/pizza-palace/menus?channel=web",
+							"host": ["{{base_url}}"],
+							"path": ["restaurants", "pizza-palace", "menus"],
+							"query": [{"key": "channel", "value": "web"}]
+						}
+					}
+				},
+				{
+					"name": "Get Restaurant Products",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/restaurants/pizza-palace/products?channel=web&category_id=1&featured=true",
+							"host": ["{{base_url}}"],
+							"path": ["restaurants", "pizza-palace", "products"],
+							"query": [
+								{"key": "channel", "value": "web"},
+								{"key": "category_id", "value": "1"},
+								{"key": "featured", "value": "true"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Restaurant Orders",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/restaurants/pizza-palace/orders?status=pending",
+							"host": ["{{base_url}}"],
+							"path": ["restaurants", "pizza-palace", "orders"],
+							"query": [{"key": "status", "value": "pending"}]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📂 Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/categories?restaurant_id={{restaurant_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["categories"],
+							"query": [{"key": "restaurant_id", "value": "{{restaurant_id}}"}]
+						}
+					}
+				},
+				{
+					"name": "Get Category Details",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/categories/1"
+					}
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurant_id\": {{restaurant_id}},\n  \"name\": {\n    \"en\": \"Pizza\",\n    \"ru\": \"Пицца\",\n    \"uz\": \"Pizza\"\n  },\n  \"description\": {\n    \"en\": \"Fresh baked pizza\",\n    \"ru\": \"Свежая выпечка пиццы\",\n    \"uz\": \"Yangi pishirilgan pizza\"\n  },\n  \"image_url\": \"https://example.com/pizza.jpg\",\n  \"sort_order\": 1\n}"
+						},
+						"url": "{{base_url}}/categories"
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": {\n    \"en\": \"Pizza Deluxe\",\n    \"ru\": \"Пицца Делюкс\",\n    \"uz\": \"Pizza Deluxe\"\n  },\n  \"is_active\": true\n}"
+						},
+						"url": "{{base_url}}/categories/1"
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/categories/1"
+					}
+				},
+				{
+					"name": "Get Restaurant Categories",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/restaurants/pizza-palace/categories"
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Menus",
+			"item": [
+				{
+					"name": "List Menus",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/menus?restaurant_id={{restaurant_id}}&channel=web&type=main",
+							"host": ["{{base_url}}"],
+							"path": ["menus"],
+							"query": [
+								{"key": "restaurant_id", "value": "{{restaurant_id}}"},
+								{"key": "channel", "value": "web"},
+								{"key": "type", "value": "main"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Menu Details",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/menus/1?channel=web",
+							"host": ["{{base_url}}"],
+							"path": ["menus", "1"],
+							"query": [{"key": "channel", "value": "web"}]
+						}
+					}
+				},
+				{
+					"name": "Create Menu",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurant_id\": {{restaurant_id}},\n  \"name\": {\n    \"en\": \"Main Menu\",\n    \"ru\": \"Основное меню\",\n    \"uz\": \"Asosiy menyu\"\n  },\n  \"description\": {\n    \"en\": \"Our main menu\",\n    \"ru\": \"Наше основное меню\",\n    \"uz\": \"Bizning asosiy menyumiz\"\n  },\n  \"type\": \"main\",\n  \"channels\": [\"web\", \"mobile\", \"pos\"],\n  \"sort_order\": 1\n}"
+						},
+						"url": "{{base_url}}/menus"
+					}
+				},
+				{
+					"name": "Update Menu",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": {\n    \"en\": \"Updated Main Menu\",\n    \"ru\": \"Обновленное основное меню\",\n    \"uz\": \"Yangilangan asosiy menyu\"\n  },\n  \"is_active\": true\n}"
+						},
+						"url": "{{base_url}}/menus/1"
+					}
+				},
+				{
+					"name": "Delete Menu",
+					"request": {
+						"method": "DELETE",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/menus/1"
+					}
+				}
+			]
+		},
+		{
+			"name": "🍕 Products",
+			"item": [
+				{
+					"name": "List Products",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/products?restaurant_id={{restaurant_id}}&category_id=1&channel=web&featured=true&search=pizza&type=simple",
+							"host": ["{{base_url}}"],
+							"path": ["products"],
+							"query": [
+								{"key": "restaurant_id", "value": "{{restaurant_id}}"},
+								{"key": "category_id", "value": "1"},
+								{"key": "channel", "value": "web"},
+								{"key": "featured", "value": "true"},
+								{"key": "search", "value": "pizza"},
+								{"key": "type", "value": "simple"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product Details",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/products/1?channel=web",
+							"host": ["{{base_url}}"],
+							"path": ["products", "1"],
+							"query": [{"key": "channel", "value": "web"}]
+						}
+					}
+				},
+				{
+					"name": "Get Products by Category",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/products/category/1"
+					}
+				},
+				{
+					"name": "Create Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurant_id\": {{restaurant_id}},\n  \"category_id\": 1,\n  \"name\": {\n    \"en\": \"Margherita Pizza\",\n    \"ru\": \"Пицца Маргарита\",\n    \"uz\": \"Margarita Pizza\"\n  },\n  \"description\": {\n    \"en\": \"Classic pizza with tomato and mozzarella\",\n    \"ru\": \"Классическая пицца с томатами и моцареллой\",\n    \"uz\": \"Pomidor va mozzarella bilan klassik pizza\"\n  },\n  \"type\": \"simple\",\n  \"prices\": {\n    \"web\": 12.99,\n    \"mobile\": 12.99,\n    \"pos\": 11.99\n  },\n  \"channels\": [\"web\", \"mobile\", \"pos\"],\n  \"sku\": \"PIZZA-001\",\n  \"calories\": 250,\n  \"allergens\": [\"gluten\", \"dairy\"],\n  \"ingredients\": [\"tomato\", \"mozzarella\", \"basil\"]\n}"
+						},
+						"url": "{{base_url}}/products"
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": {\n    \"en\": \"Margherita Pizza Deluxe\",\n    \"ru\": \"Пицца Маргарита Делюкс\",\n    \"uz\": \"Margarita Pizza Deluxe\"\n  },\n  \"prices\": {\n    \"web\": 14.99,\n    \"mobile\": 14.99,\n    \"pos\": 13.99\n  },\n  \"is_featured\": true\n}"
+						},
+						"url": "{{base_url}}/products/1"
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/products/1"
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Orders",
+			"item": [
+				{
+					"name": "List Orders",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": {
+							"raw": "{{base_url}}/orders?restaurant_id={{restaurant_id}}&status=pending&channel=web&date_from=2024-01-01&date_to=2024-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["orders"],
+							"query": [
+								{"key": "restaurant_id", "value": "{{restaurant_id}}"},
+								{"key": "status", "value": "pending"},
+								{"key": "channel", "value": "web"},
+								{"key": "date_from", "value": "2024-01-01"},
+								{"key": "date_to", "value": "2024-12-31"}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurant_id\": {{restaurant_id}},\n  \"channel\": \"web\",\n  \"customer_info\": {\n    \"name\": \"John Doe\",\n    \"phone\": \"+998901234567\",\n    \"email\": \"john@example.com\"\n  },\n  \"delivery_info\": {\n    \"type\": \"pickup\",\n    \"address\": {\n      \"street\": \"Main Street 123\",\n      \"city\": \"Tashkent\"\n    }\n  },\n  \"items\": [\n    {\n      \"product_id\": 1,\n      \"quantity\": 2,\n      \"modifiers\": [],\n      \"special_instructions\": \"No onions\"\n    }\n  ],\n  \"notes\": \"Please call when ready\"\n}"
+						},
+						"url": "{{base_url}}/orders"
+					}
+				},
+				{
+					"name": "Get Order Details",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/orders/1"
+					}
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"confirmed\",\n  \"cancellation_reason\": \"Customer request\"\n}"
+						},
+						"url": "{{base_url}}/orders/1/status"
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Accept", "value": "application/json"},
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Customer requested cancellation\"\n}"
+						},
+						"url": "{{base_url}}/orders/1/cancel"
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/dashboard/stats"
+					}
+				},
+				{
+					"name": "Get Revenue Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/dashboard/revenue"
+					}
+				},
+				{
+					"name": "Get Orders Analytics",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/dashboard/orders"
+					}
+				},
+				{
+					"name": "Get Top Products",
+					"request": {
+						"method": "GET",
+						"header": [{"key": "Accept", "value": "application/json"}],
+						"url": "{{base_url}}/dashboard/top-products"
+					}
+				}
+			]
+		}
+	]
+}
