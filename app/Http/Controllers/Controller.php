@@ -65,6 +65,11 @@ namespace App\Http\Controllers;
  *     name="Orders",
  *     description="Order management and tracking"
  * )
+ * 
+ * @OA\Tag(
+ *     name="User Management",
+ *     description="User administration and role management"
+ * )
  */
 abstract class Controller
 {

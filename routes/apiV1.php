@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\DashboardController;
 
 // API Info
@@ -25,6 +26,7 @@ Route::get('/', function () {
                 'menus' => '/menus',
                 'products' => '/products',
                 'orders' => '/orders',
+                'users' => '/users',
                 'dashboard' => '/dashboard/*',
             ]
         ],
@@ -57,6 +59,8 @@ Route::prefix('restaurants')->group(function () {
     Route::get('{restaurant:slug}/menus', [MenuController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/products', [ProductController::class, 'getByRestaurant']);
     Route::get('{restaurant:slug}/orders', [OrderController::class, 'getByRestaurant'])
+        ->middleware('auth:apiV1');
+    Route::get('{restaurant:slug}/users', [UserController::class, 'getByRestaurant'])
         ->middleware('auth:apiV1');
 });
 
@@ -117,6 +121,19 @@ Route::middleware('auth:apiV1')->group(function () {
         Route::get('{order}', [OrderController::class, 'show']);
         Route::put('{order}/status', [OrderController::class, 'updateStatus']);
         Route::post('{order}/cancel', [OrderController::class, 'cancel']);
+    });
+
+    // User management (Admin/Owner/Manager only)
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::get('roles-permissions', [UserController::class, 'getRolesAndPermissions']);
+        Route::get('{user}', [UserController::class, 'show']);
+        Route::put('{user}', [UserController::class, 'update']);
+        Route::put('{user}/password', [UserController::class, 'changePassword']);
+        Route::put('{user}/roles', [UserController::class, 'updateRoles']);
+        Route::put('{user}/status', [UserController::class, 'updateStatus']);
+        Route::delete('{user}', [UserController::class, 'destroy']);
     });
 
     // Dashboard analytics
