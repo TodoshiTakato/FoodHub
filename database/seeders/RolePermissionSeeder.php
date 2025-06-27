@@ -54,6 +54,26 @@ class RolePermissionSeeder extends Seeder
         $superAdmin = Role::firstOrCreate(['name' => 'super-admin']);
         $superAdmin->givePermissionTo(Permission::all());
 
+        // Admin - обычный администратор (управляет ресторанами и их владельцами)
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->givePermissionTo([
+            'manage-restaurants',
+            'view-restaurants',
+            'manage-menu',
+            'view-menu', 
+            'manage-products',
+            'view-products',
+            'manage-orders',
+            'view-orders',
+            'update-order-status',
+            'cancel-orders',
+            'manage-users',
+            'view-users',
+            'view-analytics',
+            'view-reports',
+            'manage-settings',
+        ]);
+
         // Restaurant Owner - управление своим рестораном
         $restaurantOwner = Role::firstOrCreate(['name' => 'restaurant-owner']);
         $restaurantOwner->givePermissionTo([

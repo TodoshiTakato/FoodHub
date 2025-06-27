@@ -74,6 +74,14 @@ class UserController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        // Проверяем права доступа - добавляем admin
+        if (!$request->user()->hasAnyRole(['super-admin', 'admin', 'restaurant-owner', 'restaurant-manager'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient permissions to view users'
+            ], 403);
+        }
+
         $query = User::with(['restaurant:id,name,slug', 'roles:id,name'])
                     ->orderBy('created_at', 'desc');
 
@@ -130,7 +138,7 @@ class UserController extends Controller
      *             @OA\Property(property="password", type="string", format="password", example="password123"),
      *             @OA\Property(property="phone", type="string", example="+998901234567"),
      *             @OA\Property(property="restaurant_id", type="integer", example=1),
-     *             @OA\Property(property="role", type="string", example="restaurant-manager"),
+     *             @OA\Property(property="role", type="string", example="restaurant-manager", description="super-admin: ALL roles | admin: restaurant-owner+ | restaurant-owner: staff only"),
      *             @OA\Property(property="status", type="string", enum={"active","inactive","suspended"}, example="active")
      *         )
      *     ),
@@ -146,11 +154,23 @@ class UserController extends Controller
      *     @OA\Response(
      *         response=422,
      *         description="Validation error"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden - cannot assign this role"
      *     )
      * )
      */
     public function store(Request $request): JsonResponse
     {
+        // Проверяем права доступа - добавляем admin
+        if (!$request->user()->hasAnyRole(['super-admin', 'admin', 'restaurant-owner'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient permissions to create users'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
@@ -160,6 +180,38 @@ class UserController extends Controller
             'role' => 'required|exists:roles,name',
             'status' => 'sometimes|in:' . implode(',', StatusEnum::strings()),
         ]);
+
+        // 🔥 НОВОЕ: Разрешаем super-admin создавать других super-admin
+        if ($validated['role'] === 'super-admin') {
+            if (!$request->user()->hasRole('super-admin')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only super-admin can create other super-admin users'
+                ], 403);
+            }
+        }
+
+        // 🔒 ЗАЩИТА: Admin могут создавать только определенные роли  
+        if ($request->user()->hasRole('admin') && !$request->user()->hasRole('super-admin')) {
+            $allowedRoles = ['restaurant-owner', 'restaurant-manager', 'kitchen-staff', 'cashier', 'call-center-operator', 'courier', 'customer'];
+            if (!in_array($validated['role'], $allowedRoles)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin users can only create: ' . implode(', ', $allowedRoles)
+                ], 403);
+            }
+        }
+
+        // 🔒 ЗАЩИТА: Restaurant owners могут создавать только определенные роли
+        if ($request->user()->hasRole('restaurant-owner') && !$request->user()->hasAnyRole(['super-admin', 'admin'])) {
+            $allowedRoles = ['restaurant-manager', 'kitchen-staff', 'cashier', 'call-center-operator', 'courier', 'customer'];
+            if (!in_array($validated['role'], $allowedRoles)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Restaurant owners can only create: ' . implode(', ', $allowedRoles)
+                ], 403);
+            }
+        }
 
         $statusValue = StatusEnum::ACTIVE->value; // Default active
         if (isset($validated['status'])) {
@@ -242,6 +294,14 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): JsonResponse
     {
+        // Проверяем права доступа - добавляем admin
+        if (!$request->user()->hasAnyRole(['super-admin', 'admin', 'restaurant-owner'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient permissions to update users'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|max:255|unique:users,email,' . $user->id,
@@ -268,6 +328,14 @@ class UserController extends Controller
      */
     public function changePassword(Request $request, User $user): JsonResponse
     {
+        // Проверяем права доступа - добавляем admin
+        if (!$request->user()->hasAnyRole(['super-admin', 'admin', 'restaurant-owner'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient permissions to change user passwords'
+            ], 403);
+        }
+
         $validated = $request->validate([
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -287,10 +355,38 @@ class UserController extends Controller
      */
     public function updateRoles(Request $request, User $user): JsonResponse
     {
+        // Только super-admin может менять роли (admin не может менять роли)
+        if (!$request->user()->hasRole('super-admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only super admin can change user roles'
+            ], 403);
+        }
+
+        // Prevent changing super admin roles
+        if ($user->hasRole('super-admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot change super admin roles'
+            ], 400);
+        }
+
         $validated = $request->validate([
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,name',
         ]);
+
+        // 🔥 НОВОЕ: Разрешаем назначение любых ролей включая super-admin
+        // Только super-admin может назначать super-admin роль
+        if (in_array('super-admin', $validated['roles'])) {
+            // Double-check: только super-admin может назначать super-admin
+            if (!$request->user()->hasRole('super-admin')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only super-admin can assign super-admin role'
+                ], 403);
+            }
+        }
 
         // Sync roles (remove old, add new)
         $user->syncRoles($validated['roles']);
@@ -307,6 +403,22 @@ class UserController extends Controller
      */
     public function updateStatus(Request $request, User $user): JsonResponse
     {
+        // Проверяем права доступа - добавляем admin
+        if (!$request->user()->hasAnyRole(['super-admin', 'admin', 'restaurant-owner'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient permissions to change user status'
+            ], 403);
+        }
+
+        // Prevent suspending super admin
+        if ($user->hasRole('super-admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cannot change super admin status'
+            ], 400);
+        }
+
         $validated = $request->validate([
             'status' => 'required|in:' . implode(',', StatusEnum::strings()),
             'reason' => 'nullable|string|max:500',
@@ -331,6 +443,14 @@ class UserController extends Controller
      */
     public function destroy(User $user): JsonResponse
     {
+        // Super-admin и admin могут удалять пользователей
+        if (!auth()->user()->hasAnyRole(['super-admin', 'admin'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only super admin or admin can delete users'
+            ], 403);
+        }
+
         // Prevent deleting super admin
         if ($user->hasRole('super-admin')) {
             return response()->json([
@@ -350,26 +470,73 @@ class UserController extends Controller
     /**
      * Get available roles and permissions
      */
-    public function getRolesAndPermissions(): JsonResponse
+    public function getRolesAndPermissions(Request $request): JsonResponse
     {
-        $roles = Role::with('permissions:id,name')->get(['id', 'name']);
+        // Определяем доступные роли в зависимости от прав пользователя
+        $availableRoles = [];
         
+        if ($request->user()->hasRole('super-admin')) {
+            // 🔥 НОВОЕ: Super-admin видит ВСЕ роли включая super-admin (для управления)
+            $availableRoles = Role::with('permissions:id,name')
+                                 ->get(['id', 'name']);
+        } elseif ($request->user()->hasRole('admin')) {
+            // Admin могут назначать роли кроме super-admin и admin
+            $allowedRoleNames = ['restaurant-owner', 'restaurant-manager', 'kitchen-staff', 'cashier', 'call-center-operator', 'courier', 'customer'];
+            $availableRoles = Role::whereIn('name', $allowedRoleNames)
+                                 ->with('permissions:id,name')
+                                 ->get(['id', 'name']);
+        } elseif ($request->user()->hasRole('restaurant-owner')) {
+            // Restaurant owners могут назначать только определенные роли
+            $allowedRoleNames = ['restaurant-manager', 'kitchen-staff', 'cashier', 'call-center-operator', 'courier', 'customer'];
+            $availableRoles = Role::whereIn('name', $allowedRoleNames)
+                                 ->with('permissions:id,name')
+                                 ->get(['id', 'name']);
+        } else {
+            // Остальные пользователи не могут создавать пользователей
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient permissions to view roles'
+            ], 403);
+        }
+
+        $roleDescriptions = [
+            'super-admin' => '🔥 SYSTEM GOD - Full system access (CAN be created via API by super-admin)',
+            'admin' => '⚡ ADMIN - System administration (manages restaurants and owners)',
+            'restaurant-owner' => '👑 Restaurant Owner - Full restaurant management',
+            'restaurant-manager' => '👨‍💼 Restaurant Manager - Operations and staff management',
+            'kitchen-staff' => '👨‍🍳 Kitchen Staff - Kitchen operations and orders',
+            'cashier' => '💰 Cashier - Handle orders and payments',
+            'call-center-operator' => '📞 Call Center - Phone orders and customer service',
+            'courier' => '🚗 Courier - Delivery staff and order status updates',
+            'customer' => '🙋‍♂️ Customer - Regular customer ordering'
+        ];
+
+        // Фильтруем описания только для доступных ролей
+        $filteredDescriptions = [];
+        foreach ($availableRoles as $role) {
+            if (isset($roleDescriptions[$role->name])) {
+                $filteredDescriptions[$role->name] = $roleDescriptions[$role->name];
+            }
+        }
+
         return response()->json([
             'success' => true,
             'data' => [
-                'roles' => $roles,
-                'role_descriptions' => [
-                    'super-admin' => 'Full system access - manages everything',
-                    'restaurant-owner' => 'Owns restaurant - full restaurant management',
-                    'restaurant-manager' => 'Manages restaurant operations and staff',
-                    'kitchen-staff' => 'Kitchen operations - view orders and menu',
-                    'cashier' => 'Handle orders and payments',
-                    'call-center-operator' => 'Take phone orders and manage customers',
-                    'courier' => 'Delivery staff - update order statuses',
-                    'customer' => 'Regular customer - place orders'
+                'available_roles' => $availableRoles,
+                'role_descriptions' => $filteredDescriptions,
+                'restrictions' => [
+                    'super_admin_note' => 'Super-admin users can be created via API by other super-admin users',
+                    'admin_note' => 'Admin users can manage restaurants and owners but cannot create super-admin or admin',
+                    'restaurant_owner_limit' => 'Restaurant owners can only create staff roles',
+                    'current_user_role' => $request->user()->roles->pluck('name')->first(),
+                    'role_hierarchy' => [
+                        'super-admin' => 'Can create: ALL roles including super-admin',
+                        'admin' => 'Can create: restaurant-owner and below',
+                        'restaurant-owner' => 'Can create: staff only'
+                    ]
                 ]
             ],
-            'message' => 'Roles and permissions retrieved successfully'
+            'message' => 'Available roles retrieved successfully'
         ]);
     }
 

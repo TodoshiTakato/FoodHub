@@ -83,10 +83,10 @@ Route::prefix('products')->group(function () {
     Route::get('category/{category}', [ProductController::class, 'getByCategory']);
 });
 
-// Protected routes (require authentication)
+// Protected routes (require authentication only - role checks in controllers)
 Route::middleware('auth:apiV1')->group(function () {
     
-    // Restaurant management (for restaurant owners/managers)
+    // Restaurant management
     Route::prefix('restaurants')->group(function () {
         Route::post('/', [RestaurantController::class, 'store']);
         Route::put('{restaurant}', [RestaurantController::class, 'update']);
@@ -123,7 +123,7 @@ Route::middleware('auth:apiV1')->group(function () {
         Route::post('{order}/cancel', [OrderController::class, 'cancel']);
     });
 
-    // User management (Admin/Owner/Manager only)
+    // User management
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/', [UserController::class, 'store']);

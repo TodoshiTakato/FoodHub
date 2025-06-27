@@ -29,6 +29,15 @@ class UserSeeder extends Seeder
                 'role' => 'super-admin'
             ],
             [
+                'name' => 'System Admin',
+                'email' => 'sysadmin@foodhub.com',
+                'password' => Hash::make('sysadmin123'),
+                'phone' => '+998901234577',
+                'restaurant_id' => null,
+                'status' => StatusEnum::ACTIVE->value,
+                'role' => 'admin'
+            ],
+            [
                 'name' => 'Restaurant Owner',
                 'email' => 'owner@pizzapalace.com',
                 'password' => Hash::make('owner123'),
@@ -56,6 +65,15 @@ class UserSeeder extends Seeder
                 'role' => 'kitchen-staff'
             ],
             [
+                'name' => 'Cashier',
+                'email' => 'cashier@foodhub.com',
+                'password' => Hash::make('cashier123'),
+                'phone' => '+998901234574',
+                'restaurant_id' => 1,
+                'status' => StatusEnum::ACTIVE->value,
+                'role' => 'cashier'
+            ],
+            [
                 'name' => 'Test User 1',
                 'email' => 'testuser1@foodhub.com',
                 'password' => Hash::make('test123'),
@@ -69,15 +87,6 @@ class UserSeeder extends Seeder
                 'email' => 'testuser2@foodhub.com',
                 'password' => Hash::make('test123'),
                 'phone' => '+998901234572',
-                'restaurant_id' => null,
-                'status' => StatusEnum::ACTIVE->value,
-                'role' => 'customer'
-            ],
-            [
-                'name' => 'API Test User',
-                'email' => 'apitest@foodhub.com',
-                'password' => Hash::make('api123'),
-                'phone' => '+998901234573',
                 'restaurant_id' => null,
                 'status' => StatusEnum::ACTIVE->value,
                 'role' => 'customer'

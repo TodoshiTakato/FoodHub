@@ -87,40 +87,121 @@
 				{
 					"name": "Update Profile",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [
-							{"key": "Accept", "value": "application/json"},
-							{"key": "Content-Type", "value": "application/json"}
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"John Smith\",\n  \"phone\": \"+998901234567\",\n  \"email\": \"john.smith@foodhub.uz\"\n}"
+							"raw": "{\n  \"name\": \"John Doe Updated\",\n  \"phone\": \"+998901234568\",\n  \"email\": \"john.updated@example.com\",\n  \"restaurant_id\": 1\n}"
 						},
-						"url": "{{base_url}}/auth/profile"
-					}
+						"url": {
+							"raw": "{{base_url}}/auth/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
 				},
 				{
 					"name": "Change Password",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "PUT",
 						"header": [
-							{"key": "Accept", "value": "application/json"},
-							{"key": "Content-Type", "value": "application/json"}
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"current_password\": \"password123\",\n  \"password\": \"newpassword123\",\n  \"password_confirmation\": \"newpassword123\"\n}"
 						},
-						"url": "{{base_url}}/auth/password"
-					}
+						"url": {
+							"raw": "{{base_url}}/auth/password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"password"
+							]
+						}
+					},
+					"response": []
 				},
 				{
 					"name": "Refresh Token",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
-						"header": [{"key": "Accept", "value": "application/json"}],
-						"url": "{{base_url}}/auth/refresh"
-					}
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
 				},
 				{
 					"name": "Logout",
@@ -584,21 +665,41 @@
 				{
 					"name": "Create User",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
-							{"key": "Accept", "value": "application/json"},
-							{"key": "Content-Type", "value": "application/json"},
-							{"key": "Authorization", "value": "Bearer {{auth_token}}"}
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"New Staff Member\",\n  \"email\": \"newstaff@pizzapalace.com\",\n  \"password\": \"staff123\",\n  \"phone\": \"+998901234999\",\n  \"restaurant_id\": {{restaurant_id}},\n  \"role\": \"kitchen-staff\",\n  \"status\": \"active\"\n}"
+							"raw": "{\n  \"name\": \"New Staff Member\",\n  \"email\": \"staff@pizzapalace.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+998901234574\",\n  \"restaurant_id\": 1,\n  \"role\": \"restaurant-manager\",\n  \"status\": \"active\"\n}\n\n// 🔥 NEW FEATURES:\n// Super-admin can create ANY role including super-admin:\n// \"role\": \"super-admin\"   ✅ ALLOWED for super-admin\n// \"role\": \"admin\"        ✅ ALLOWED for super-admin\n//\n// Admin can create restaurant-level roles:\n// \"role\": \"restaurant-owner\"     ✅ ALLOWED for admin\n// \"role\": \"restaurant-manager\"   ✅ ALLOWED for admin  \n// \"role\": \"super-admin\"          ❌ FORBIDDEN for admin\n//\n// Restaurant-owner can create staff only:\n// \"role\": \"kitchen-staff\"        ✅ ALLOWED for restaurant-owner\n// \"role\": \"cashier\"              ✅ ALLOWED for restaurant-owner"
 						},
 						"url": {
 							"raw": "{{base_url}}/users",
-							"host": ["{{base_url}}"],
-							"path": ["users"]
-						}
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "🔒 **SECURITY RESTRICTIONS:**\n\n**❌ FORBIDDEN:**\n- Cannot create `super-admin` role (only via console command)\n- Restaurant owners cannot create `restaurant-owner` roles\n\n**✅ ALLOWED for Super Admin:**\n- All roles except `super-admin`\n\n**✅ ALLOWED for Restaurant Owner:**\n- `restaurant-manager`\n- `kitchen-staff` \n- `cashier`\n- `call-center-operator`\n- `courier`\n- `customer`\n\n**💡 To create super-admin:**\n```bash\nphp artisan user:create-super-admin\n```"
 					}
 				},
 				{
@@ -740,6 +841,88 @@
 							"path": ["users", "2"]
 						}
 					}
+				},
+				{
+					"name": "Create Super Admin (API)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Super Administrator\",\n  \"email\": \"superadmin@foodhub.com\",\n  \"password\": \"superadmin123\",\n  \"phone\": \"+998901234999\",\n  \"role\": \"super-admin\",\n  \"status\": \"active\"\n}\n\n// 🔥 SUPER-ADMIN CREATION VIA API:\n// ✅ ONLY super-admin can create other super-admin\n// ✅ Full API support for admin panel\n// ⚠️  Use strong passwords for super-admin accounts\n// 📝 Alternative: console command still available"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Create super-admin user via API (requires super-admin privileges)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Admin User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{auth_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"System Admin\",\n  \"email\": \"admin@foodhub.com\",\n  \"password\": \"admin123\",\n  \"phone\": \"+998901234888\",\n  \"role\": \"admin\",\n  \"status\": \"active\"\n}\n\n// ⚡ ADMIN ROLE:\n// ✅ Can manage restaurants and owners\n// ✅ Can create restaurant-owner, manager, staff\n// ❌ Cannot create super-admin or admin\n// 🏢 System-wide access (not restaurant-specific)"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Create admin user (requires super-admin privileges)"
+					},
+					"response": []
 				}
 			]
 		},

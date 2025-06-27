@@ -202,7 +202,38 @@ class AuthController extends Controller
     }
 
     /**
-     * Update user profile
+     * @OA\Put(
+     *     path="/api/v1/auth/profile",
+     *     summary="Update authenticated user profile",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="phone", type="string", example="+998901234567"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="restaurant_id", type="integer", example=1, description="Only for super-admin or restaurant owners")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Profile updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Profile updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions"
+     *     )
+     * )
      */
     public function updateProfile(Request $request): JsonResponse
     {
@@ -212,7 +243,18 @@ class AuthController extends Controller
             'name' => 'sometimes|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'sometimes|email|max:255|unique:users,email,' . $user->id,
+            'restaurant_id' => 'nullable|exists:restaurants,id',
         ]);
+
+        // Only super-admin, admin or restaurant owners can change restaurant_id
+        if (isset($validated['restaurant_id'])) {
+            if (!$user->hasAnyRole(['super-admin', 'admin', 'restaurant-owner'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Insufficient permissions to change restaurant'
+                ], 403);
+            }
+        }
 
         $user->update($validated);
 
@@ -224,7 +266,33 @@ class AuthController extends Controller
     }
 
     /**
-     * Change password
+     * @OA\Put(
+     *     path="/api/v1/auth/password",
+     *     summary="Change current user password",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"current_password","password","password_confirmation"},
+     *             @OA\Property(property="current_password", type="string", format="password", example="oldpassword123"),
+     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password changed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Password changed successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error - incorrect current password"
+     *     )
+     * )
      */
     public function changePassword(Request $request): JsonResponse
     {
@@ -282,7 +350,28 @@ class AuthController extends Controller
     }
 
     /**
-     * Refresh token
+     * @OA\Post(
+     *     path="/api/v1/auth/refresh",
+     *     summary="Refresh authentication token",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token refreshed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Token refreshed successfully"),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."),
+     *                 @OA\Property(property="token_type", type="string", example="Bearer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated"
+     *     )
+     * )
      */
     public function refresh(Request $request): JsonResponse
     {
