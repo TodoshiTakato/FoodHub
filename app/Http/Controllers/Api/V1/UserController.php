@@ -324,7 +324,43 @@ class UserController extends Controller
     }
 
     /**
-     * Change user password (Admin only)
+     * @OA\Put(
+     *     path="/api/v1/users/{id}/password",
+     *     summary="Change user password (admin only)",
+     *     tags={"User Management"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"password", "password_confirmation"},
+     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User password changed successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="User password changed successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function changePassword(Request $request, User $user): JsonResponse
     {
@@ -351,7 +387,47 @@ class UserController extends Controller
     }
 
     /**
-     * Update user roles
+     * @OA\Put(
+     *     path="/api/v1/users/{id}/roles",
+     *     summary="Update user roles (super-admin only)",
+     *     tags={"User Management"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"roles"},
+     *             @OA\Property(property="roles", type="array", @OA\Items(type="string", example="restaurant-manager"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User roles updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="User roles updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Cannot change super admin roles"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Only super admin can change user roles"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function updateRoles(Request $request, User $user): JsonResponse
     {
@@ -399,7 +475,48 @@ class UserController extends Controller
     }
 
     /**
-     * Suspend/Activate user
+     * @OA\Put(
+     *     path="/api/v1/users/{id}/status",
+     *     summary="Update user status (admin/owner only)",
+     *     tags={"User Management"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="User ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"status"},
+     *             @OA\Property(property="status", type="string", enum={"active","inactive","suspended"}, example="suspended"),
+     *             @OA\Property(property="reason", type="string", example="Violation of company policy")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="User status updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="User status updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Cannot change super admin status"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions to change user status"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error"
+     *     )
+     * )
      */
     public function updateStatus(Request $request, User $user): JsonResponse
     {
@@ -468,7 +585,25 @@ class UserController extends Controller
     }
 
     /**
-     * Get available roles and permissions
+     * @OA\Get(
+     *     path="/api/v1/users/roles-permissions",
+     *     summary="Get available roles and permissions",
+     *     tags={"User Management"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Available roles retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Available roles retrieved successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Insufficient permissions to view roles"
+     *     )
+     * )
      */
     public function getRolesAndPermissions(Request $request): JsonResponse
     {
@@ -541,7 +676,28 @@ class UserController extends Controller
     }
 
     /**
-     * Get users by restaurant (for restaurant owners/managers)
+     * @OA\Get(
+     *     path="/api/v1/restaurants/{restaurant}/users",
+     *     summary="Get users by restaurant",
+     *     tags={"User Management"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="restaurant",
+     *         in="path",
+     *         description="Restaurant ID",
+     *         required=true,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Restaurant users retrieved successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Restaurant users retrieved successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     )
+     * )
      */
     public function getByRestaurant(Restaurant $restaurant, Request $request): JsonResponse
     {
